@@ -1,0 +1,102 @@
+﻿@using BulletinBoard.Web.Models
+@model Announcement
+
+@{
+    ViewData["Title"] = "Edit Announcement";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Title" class="control-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group form-check">
+        <input asp-for="Status" class="form-check-input" />
+        <label asp-for="Status" class="form-check-label"></label>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category" class="control-label"></label>
+        <select asp-for="Category" asp-items="ViewBag.CategoryList" class="form-control" id="Category">
+            <option value="">-- Select category --</option>
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SubCategory" class="control-label"></label>
+        <select asp-for="SubCategory" class="form-control" id="SubCategory">
+            <option value="">-- Select subcategory --</option>
+        </select>
+        <span asp-validation-for="SubCategory" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        (function(){
+            const subs = {
+                "Household appliances": [
+                    "Refrigerators","Washing machines","Boilers","Ovens","Hoods","Microwaves"
+                ],
+                "Computer technology": [
+                    "PC","Laptops","Monitors","Printers","Scanners"
+                ],
+                "Smartphones": [
+                    "Android smartphones","iOS/Apple smartphones"
+                ],
+                "Other": [
+                    "Clothing","Footwear","Accessories","Sports equipment","Toys"
+                ]
+            };
+
+            const categorySelect = document.getElementById("Category");
+            const subSelect = document.getElementById("SubCategory");
+
+            function populateSubcats(selectedCategory, selectedSub) {
+                const opts = subs[selectedCategory] || [];
+                subSelect.innerHTML = '<option value="">-- Select subcategory --</option>';
+                opts.forEach(function(s){
+                    const opt = document.createElement("option");
+                    opt.value = s;
+                    opt.textContent = s;
+                    if (s === selectedSub) opt.selected = true;
+                    subSelect.appendChild(opt);
+                });
+            }
+
+            categorySelect.addEventListener("change", function(){
+                populateSubcats(this.value, null);
+            });
+
+            const initialCategory = '@Model.Category';
+            const initialSub = '@Model.SubCategory';
+            if (initialCategory) {
+                categorySelect.value = initialCategory;
+                populateSubcats(initialCategory, initialSub);
+            }
+        })();
+    </script>
+}

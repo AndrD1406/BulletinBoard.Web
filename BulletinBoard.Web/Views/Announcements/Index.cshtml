@@ -1,0 +1,98 @@
+﻿@using BulletinBoard.Web.Models
+@model IEnumerable<Announcement>
+
+@{
+    ViewData["Title"] = "All Announcements";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="get" asp-action="Index" class="mb-3 form-inline">
+
+    <h3>Filter by:</h3>
+    <div class="form-group me-2">
+        <label for="category" class="me-1">Category:</label>
+        <select id="category"
+                name="category"
+                class="form-select"
+                onchange="this.form.submit()">
+            <option value="">-- All --</option>
+            @foreach (var c in (SelectList)ViewBag.CategoryList)
+            {
+                if (c.Value == (string)ViewBag.SelectedCategory)
+                {
+                    <option value="@c.Value" selected="selected">@c.Text</option>
+                }
+                else
+                {
+                    <option value="@c.Value">@c.Text</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="form-group me-2">
+        <label for="subCategory" class="me-1">Subcategory:</label>
+        <select id="subCategory"
+                name="subCategory"
+                class="form-select"
+                onchange="this.form.submit()">
+            <option value="">-- All --</option>
+            @foreach (var sc in (SelectList)ViewBag.SubCategoryList)
+            {
+                if (sc.Value == (string)ViewBag.SelectedSubCategory)
+                {
+                    <option value="@sc.Value" selected="selected">@sc.Text</option>
+                }
+                else
+                {
+                    <option value="@sc.Value">@sc.Text</option>
+                }
+            }
+        </select>
+    </div>
+
+    <noscript>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+    </noscript>
+</form>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">+ New Announcement</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>SubCategory</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ann in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@ann.Id">@ann.Title</a>
+                </td>
+                <td>@ann.CreatedDate.ToString("g")</td>
+                <td>@(ann.Status ? "Active" : "Inactive")</td>
+                <td>@ann.Category</td>
+                <td>@ann.SubCategory</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@ann.Id" class="btn btn-sm btn-secondary">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@ann.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete this announcement?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
